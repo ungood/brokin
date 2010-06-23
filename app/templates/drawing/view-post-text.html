@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% import "drawing/macros.html" as drawing %}
+
+{% block head %}
+{{ super() }}
+    <script type="text/javascript" src="/scripts/paint.js"></script>
+{% endblock head %}
+
+{% block content -%}
+  {{ drawing.display_post(post) }}
+  {{ drawing.paint_edit() }}
+{% endblock content %}

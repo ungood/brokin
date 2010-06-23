@@ -1,0 +1,30 @@
+{% macro display_post(post) %}
+  {% if post.text is defined %}
+    {{ post.text|e }}
+  {% else %}
+    <img height="270" width="270" src={{ url_for('view-image', image_key=post.image_key) }} />    
+  {% endif %}
+{% endmacro %}
+
+{% macro link_post(post) %}
+  <a href="{{ url_for('view-post', post_key=post.key().name()) }}">
+    {{ display_post(post) }}
+  </a>
+  <span>by {{ post.author_username|default('Anonymous', true)|e }}
+{% endmacro %}
+
+{% macro paint_edit() %}
+  <div style="background-color: white; width:600;min-height:600;border:solid 1px;cursor:crosshair" id="surface"></div>
+  <button id='undo'>Undo</button>
+  <form method="post" action="" id="post-form">
+    <input type="submit" id='save' />
+    <input type="hidden" name='post-image' id="data-url" />
+  </form>
+{% endmacro %}
+
+{% macro text_edit() %}
+  <form method="post">
+    <input type="text" name="post-text" maxlength="140" size="100" />
+    <input type="submit" />
+  </form>
+{% endmacro %}

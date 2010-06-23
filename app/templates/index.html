@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% import "drawing/macros.html" as drawing %}
+
+{% block content -%}
+  {% for post in posts %}
+    <div class="post-box">
+      {{ drawing.link_post(post) }}
+    </div>
+  {% endfor %}
+{% endblock content %}

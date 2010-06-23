@@ -1,0 +1,50 @@
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Brok.in Telephone</title>
+    {% block head %}
+    <link rel="stylesheet" href="/style/site.css" />
+    <script type="text/javascript">
+        djConfig = {
+            isDebug: false,
+            parseOnLoad: true,
+            baseUrl: "/",
+            modulePaths: {
+                "brokin.paint": "scripts/paint"
+            },
+            gfxRenderer:'canvas'
+        };
+    </script> 
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/dojo/1.4/dojo/dojo.xd.js.uncompressed.js"></script>
+    {% endblock head %}
+</head>
+<body>
+	<div id="outer-wrapper">
+		<div id="inner-wrapper">
+			<div id="header">
+				<h1><a href="{{ url_for('index') }}">Brok.in Telephone</a></h1>
+				<div id="login-box">
+					{% if user is none %}
+						<a href="{{ login_url }}">Log in</a> or <a href="{{ signup_url }}">Register</a>
+					{% else %}
+						Welcome, {{ user.username|e }} - <a href="{{ logout_url }}">Log out</a>
+					{% endif %}
+				</div>
+			</div>
+			<ul id="top-menu">
+				<li><a href="{{ url_for('index') }}">Home</a></li>
+				<li><a href="{{ url_for('new-post') }}">New Post</a></li>
+				<li><a href="#">Test</a></li>
+				<li><a href="#">Test</a></li>
+				<li><a href="#">Test</a></li>
+			</ul>
+			<div id="content">
+				{% block content %}
+				{% endblock content %}
+				<div class="clear"></div>
+			</div>
+			<div id="footer">
+			</div>
+		</div>
+  </div>
+</body>
+</html>

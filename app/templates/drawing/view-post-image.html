@@ -1,0 +1,7 @@
+{% extends "base.html" %}
+{% import "drawing/macros.html" as drawing %}
+
+{% block content -%}
+  {{ drawing.display_post(post) }}  
+  {{ drawing.text_edit() }}
+{% endblock content %}

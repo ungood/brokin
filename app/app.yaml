@@ -1,0 +1,24 @@
+application: brokin-telephone
+version: 00-01
+runtime: python
+api_version: 1
+
+handlers:
+- url: /(robots\.txt|favicon\.ico)
+  static_files: static/\1
+  upload: static/(robot\.txt|favicon\.ico)
+
+- url: /(scripts|style|images)/(.*)
+  static_files: static/\1/\2
+  upload: static/(scripts|style|images)/(.*)
+
+- url: /remote_api
+  script: $PYTHON_LIB/google/appengine/ext/remote_api/handler.py
+  login: admin
+
+- url: /_ah/queue/deferred
+  script: main.py
+  login: admin
+
+- url: /.*
+  script: main.py

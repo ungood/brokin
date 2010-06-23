@@ -1,0 +1,133 @@
+* { margin: 0px; padding: 0px; }
+
+html,body,div,span,
+applet,object,iframe,
+h1h2,h3,h4,h5,h6,p,blockquote,pre,
+a,abbr,acronym,address,big,cite,code,
+del,dfn,em,font,img,ins,kbd,q,s,samp,
+small,strike,strong,sub,sup,tt,var,
+dd,dl,dt,li,ol,ul,
+fieldset,form,label,legend,
+table,caption,tbody,tfoot,thead,tr,th,td {
+    margin: 0px;
+    padding: 0px;
+    border: 0px;
+    font-weight: normal;
+    font-style: normal;
+    font-size: 100%;
+    line-height: 1em;
+    font-family: inherit;
+    text-align: left;
+    outline: 0px;
+}
+
+table {
+    border-collapse: collapse;
+    border-spacing: 0px;
+}
+
+/* sizes:
+ * outer: 990
+ * inner: 960
+ * post: 280
+ * margins: 40
+ */
+
+/* colors:
+ * orange: bf4c18
+ * cream: FFFAA9
+ * blues: 0a2333, 0c2c40, 18587f, 2483bf
+ * dark: 332f28
+ * green: 597533
+ */
+
+body {
+    background: url('../images/body-bg.png') repeat;
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-size: 0.85em;
+}
+
+#outer-wrapper {
+    width: 990px;
+    margin: 0px auto;
+    margin-bottom: 50px;
+    background: url('../images/outer-wrapper-bg.png') repeat-y;
+}
+
+#inner-wrapper {
+    width: 960px;
+    margin: 0px auto;
+    background-color: FFFAA9;
+}
+
+#header {
+    position: relative;
+    padding: 10px 15px;
+    background-color: #bf4c18;
+}
+
+#header a,
+#header a:active,
+#header a:visited {
+    color: white;
+    text-decoration: none;
+}
+
+h1 {
+    font-size: 50px;
+    line-height: 50px;
+}
+
+#login-box {
+    text-align: right;
+    position: absolute;
+    right: 10px;
+    bottom: 10px;
+}
+
+#login-box a {
+    text-decoration: underline;
+}
+
+#top-menu {
+    list-style-type: none;
+    height: 40px;
+    margin: 0px -15px;
+    background: url('../images/top-nav.png') repeat-x;
+    border: 1px solid 332f28;
+}
+
+#top-menu li {
+    display: inline;    
+}
+
+#top-menu li a {
+    text-decoration: none;
+    text-align: center;
+    float: left;
+    font-size: 24px;
+    line-height: 40px;
+    width: 165px;
+    color: white;
+    border-right: 1px solid #0a2333;
+}
+
+#top-menu li a:active, #top-menu li a:hover {
+    background: url('../images/top-nav-active.png') repeat-x;
+}
+
+#content {
+    padding: 20px;
+}
+
+.post-box {
+    background: white;
+    width: 264px;
+    margin: 20px;
+    float: left;
+    border: 1px solid #332f28;
+}
+
+.clear {
+    clear: both;
+}

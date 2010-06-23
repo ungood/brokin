@@ -1,22 +1,13 @@
 {% extends "base.html" %}
+{% import "forms.html" as forms %}
 
 {% block content -%}
-  {% if error %}
-    <h3>{{ error }}</h3>
-  {% endif %}
-  <form method="post">
-    <p><label for="username">Username</label>
-    <input type="text" id="username" name="username"><p>
-
-    <p><label for="email">E-mail</label>
-    <input type="text" id="email" name="email"></p>
-
-    <p><label for="password">Password</label>
-    <input type="password" id="password" name="password"></p>
-
-    <p><label for="confirm_password">Confirm Password</label>
-    <input type="password" id="confirm_password" name="confirm_password"></p>
-
-    <p><input type="submit" name="submit" value="save"></p>
+  <form method="post" class="tipfy-form">
+    <fieldset>
+      <legend>Registration Form</legend>
+      
+      {{ forms.table(form) }}
+      <input type="submit" name="submit" value="Sign Up">
+    </fieldset>
   </form>
 {% endblock content %}

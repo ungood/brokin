@@ -8,7 +8,7 @@ from tipfy import url_for
 from tipfy.ext.db import get_by_key_name_or_404
 
 from apps.users.models import CustomUser
-from utils import cache, keys, validation
+from utils import cache, keys
 
 _data_url_regex = re.compile(r'^data:(?P<type>[^;]+);base64,(?P<content>.+)$')
 _key_generator  = keys.KeyGenerator()
@@ -26,13 +26,8 @@ class Image(db.Model):
         key = _key_generator.create_key()
         logging.debug('Creating a new Image: %s' % key)
         
-        if(data_url == None):
-            raise validation.MissingValueError('Data for an Image is required.')
-                
         match = _data_url_regex.match(data_url)
-        if(match == None):
-            raise validation.BadFormatError('Data supplied does not match Base64 format.')
-        
+                
         content_type = match.group('type')
         b64encoded = match.group('content')
         full_size = base64.b64decode(b64encoded)
@@ -73,7 +68,7 @@ class Post(polymodel.PolyModel):
     @classmethod    
     @cache.memoize('Post-recent')
     def list_recent(cls):
-        return Post.all().order('created').fetch(10)
+        return Post.all().order('-created').fetch(10)
 
         
 class ImagePost(Post):

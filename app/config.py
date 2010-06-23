@@ -34,4 +34,12 @@ config['tipfy.ext.session'] = {
     'secret_key'          : 'vujEvdanyunholyoircEujimreshDyodhacmyzquajryerckAushrenOyWra',
 }
 
+config['tipfy.ext.wtforms'] = {
+    'recaptcha_options'    : {
+        'theme'            : 'red'
+    },
+    'recaptcha_use_ssl'    : False,
+    'recaptcha_public_key' : '6LdNB7sSAAAAAPu5dRf2lV7X0TCQYO-exvzwhOUZ' if is_dev else '6LfrBrsSAAAAAChxU_tpTe6AcOy4CQsz1on2NpCk',
+    'recaptcha_private_key': '6LdNB7sSAAAAAMUZ9vhcJWu4fT7lZq00qwW9zhi1' if is_dev else '6LfrBrsSAAAAAArQnAjvbVj18vxm9LKChrrPslvw',
+}
 

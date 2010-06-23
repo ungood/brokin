@@ -5,16 +5,17 @@ from tipfy import request, redirect, redirect_to
 from tipfy.ext import auth
 from tipfy.ext import session
 
+from utils.handlers import BaseHandler
 from models import CustomUser
-from utils import validation, handlers
+from forms import RegistrationForm
 
-class LogoutHandler(handlers.BaseHandler):
+class LogoutHandler(BaseHandler):
     def get(self):
         auth.get_auth_system().logout()
         return redirect_to('index')
         
 
-class LoginHandler(handlers.BaseHandler):
+class LoginHandler(BaseHandler):
     error = None
     
     def get(self):
@@ -50,25 +51,25 @@ class LoginHandler(handlers.BaseHandler):
         return self.get()
         
         
-class RegisterHandler(handlers.BaseHandler):
-    error = None
-
-    def get(self, **kwargs):
+class RegisterHandler(BaseHandler):
+    def _get(self, form):
         context = {
-            'error': self.error,
+            'form': form
         }
         return self.render_response('users/register.html', **context)
+    
+    def get(self, **kwargs):
+        return self._get(RegistrationForm())
 
     def post(self, **kwargs):
-        username = request.form.get('username', '').strip()
-        email    = request.form.get('email', '').strip()
-        password = request.form.get('password', '').strip()
-        confirm  = request.form.get('confirm_password', '').strip()
-
-        try:
-            user = CustomUser.register('own', username, password, confirm, email)
+        form = RegistrationForm(request.form)
+        if form.validate():
+            user = CustomUser.register('own',
+                                       form.username.data,
+                                       form.password.data,
+                                       form.confirm.data,
+                                       form.email.data)
             return redirect(request.args.get('redirect', '/'))
-        except validation.ValidationError, e:
-            self.error = e
-            return self.get()
-            
+        
+        return self._get(form)
+                    

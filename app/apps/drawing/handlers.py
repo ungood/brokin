@@ -16,7 +16,7 @@ class ViewImageHandler(BaseHandler):
 class BasePostHandler(BaseHandler):
     def _assign_user(self, post):
         user        = auth.get_current_user()
-        session_key = None if self.session == None else self.session['key']
+        session_key = None if self.session == None else self.session.get('key')
         post.author          = user
         post.session_key     = session_key
         post.author_username = None if user == None else user.username

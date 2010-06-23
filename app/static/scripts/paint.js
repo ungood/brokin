@@ -87,8 +87,7 @@ dojo.ready(function() {
             }
       });
       
-      var undoDom = dojo.query('undo');
-      dojo.connect(undoDom, "onclick", null, function() {
+      dojo.query('#undo').onclick(function() {
             var pathToUndo = history.pop();
             console.dir(history);
             if(pathToUndo) {
@@ -96,11 +95,9 @@ dojo.ready(function() {
             }
       });
       
-      var saveDom = dojo.query('post-form');
-      dojo.connect(saveDom, "onsubmit", null, function(e) {
+      dojo.query('#save').onclick(function(e) {
             var data = surface.rawNode.toDataURL();
-            var hidden = dojo.query('data-url');
-            hidden.value = data;
+            dojo.byId('data-url').value = data;
       });
         
     });

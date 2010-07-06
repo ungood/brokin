@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 import logging, tipfy
-from tipfy.ext import auth
 from google.appengine.ext import db
 
 from utils.handlers import BaseHandler
+from apps.users.models import CustomUser
 from models import Image, Post, ImagePost, TextPost
 
 
@@ -14,12 +14,16 @@ class ViewImageHandler(BaseHandler):
 
 
 class BasePostHandler(BaseHandler):
+    def dispatch(self, *args, **kwargs):
+        self.context = self.context or {}
+        self.context
+        
+        return RequestHandler.dispatch(self, *args, **kwargs)
+    
     def _assign_user(self, post):
-        user        = auth.get_current_user()
-        session_key = None if self.session == None else self.session.get('key')
-        post.author          = user
-        post.session_key     = session_key
-        post.author_username = None if user == None else user.username
+        session_key      = None if self.session == None else self.session.get('key')
+        post.author      = CustomUser.get_current_user()
+        post.session_key = session_key
     
     def _create_image_post(self):
         """Creates a new ImagePost from the form variables."""
@@ -53,16 +57,14 @@ class ViewPostHandler(BasePostHandler):
     def _get_text(self, post):
         return self.render_response('drawing/view-post-text.html', post=post)
     
-    #@transaction
     def post(self, post_key):
         parent = Post.get_or_404(post_key)
         new_post = None
-        
         if isinstance(parent, ImagePost):
             new_post = self._create_text_post()
         else:
             new_post = self._create_image_post()
-        new_post.reply_to = parent
+        parent.add_reply(new_post)
         new_post.put()
         return tipfy.redirect_to('view-post', post_key=new_post.key().name())
 
@@ -72,11 +74,9 @@ class NewPostHandler(BasePostHandler):
         """Returns a page that displays the drawing form."""
         return self.render_response('drawing/new-post.html')
     
-    #@transaction
     def post(self):
         """Save a new post and redirect the user to a random one."""
         post = self._create_image_post()
         post.put()
-        #db.run_in_transaction(txn)
-        
+                
         return tipfy.redirect_to('view-post', post_key=post.key().name())

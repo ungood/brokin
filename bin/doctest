@@ -5,12 +5,14 @@ import os
 join = os.path.join
 base = os.path.dirname(os.path.abspath(os.path.realpath(__file__)))
 base = os.path.dirname(base)
+gae = '/usr/local/google_appengine'
 
 import sys
 
 sys.path[0:0] = [
-  join(base, 'etc/eggs/appfy.recipe.gae-0.7.2-py2.5.egg'),
-  join(base, 'etc/parts/google_appengine'),
+  gae,
+  join(gae, 'lib/yaml/lib'),
+  join(base, '/usr/local/google_appengine'),
   join(base, 'app'),
   join(base, 'app/lib'),
   join(base, 'app/distlib'),

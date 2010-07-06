@@ -1,0 +1,185 @@
+.tipfy-form {
+    /* Reset font size for form elements. */
+    font:13px/1.231 arial, sans-serif;
+    *font-size:small;
+    *font:x-small;
+}
+
+/* Fieldset, legend, label */
+.tipfy-form fieldset {
+    background: white;
+    border: 1px solid black;
+    padding: 15px;
+    margin: 0;
+}
+.tipfy-form label,
+.tipfy-form legend {
+    display: block;
+    color: #000;
+    font-size: 108%;
+    font-weight: bold;
+    padding: 5px;
+    margin: 0;
+}
+
+/* Indicate required fields */
+.tipfy-form label abbr {
+    color: #CC0000;
+    font-weight: bold;
+    padding: 0 0 0 .3em;
+    border: 0;
+    margin: 0;
+}
+
+/* Field description */
+.tipfy-form span.descr {
+    display: block;
+    color: #999999;
+}
+
+/* Field errors */
+.tipfy-form ul.errors {
+    padding: 0;
+    margin: 0;
+}
+.tipfy-form ul.errors li {
+    color: #CC0000;
+    font-weight: bold;
+    padding: 0;
+    margin: 0 0 .3em 0;
+}
+
+/* Text, password, select, select-multi, textarea */
+.tipfy-form input[type=text],
+.tipfy-form input[type=password],
+.tipfy-form select,
+.tipfy-form textarea,
+.tipfy-form .input-text,
+.tipfy-form .input-password {
+    /*width: 100%;*/
+    background: #F2F2F2;
+    font-size: 123.1%;
+    padding: 3px 0;
+    border: 1px solid #B3B3B3;
+}
+.tipfy-form input[type=text]:focus,
+.tipfy-form input[type=text]:hover,
+.tipfy-form input[type=password]:focus,
+.tipfy-form input[type=password]:hover,
+.tipfy-form select:focus,
+.tipfy-form select:hover,
+.tipfy-form textarea:focus,
+.tipfy-form textarea:hover,
+.tipfy-form .input-text:focus,
+.tipfy-form .input-text:hover,
+.tipfy-form .input-password:focus,
+.tipfy-form .input-password:hover {
+    border: 1px solid #333333;
+}
+.tipfy-form input[type=text]:focus,
+.tipfy-form input[type=password]:focus,
+.tipfy-form textarea:focus,
+.tipfy-form select:focus,
+.tipfy-form .input-text:focus,
+.tipfy-form .input-password:focus {
+    background: #FFFFCC;
+}
+.tipfy-form textarea {
+    height: 100px;
+}
+.tipfy-form select {
+    width: auto;
+}
+.tipfy-form select[multiple=multiple],
+.tipfy-form .select-multiple {
+    /* width: 100%; */
+    height: 100px;
+}
+
+/* Checkboxes and radios */
+.tipfy-form input[type=checkbox],
+.tipfy-form input[type=radio] {
+    padding: 0;
+    margin: 0;
+}
+.tipfy-form input[type=checkbox] + label,
+.tipfy-form input[type=radio] + label,
+.tipfy-form .input-checkbox-label,
+.tipfy-form .input-radio-label {
+    display: inline;
+    font-weight: normal;
+    margin-left: .2em;
+}
+.tipfy-form ul.radio-group {
+    padding: 0;
+    margin: .4em 0 0;
+}
+.tipfy-form ul.radio-group li {
+    padding: 0;
+    margin: .4em 0 0;
+}
+
+/* Buttons */
+.tipfy-form fieldset.submit {
+    text-align: left;
+    padding: 0;
+    margin: 1em 0 0 0;
+}
+
+.tipfy-form input[type=button],
+.tipfy-form input[type=submit],
+.tipfy-form .input-button,
+.tipfy-form .input-submit {
+    font-size: 123.1%;
+    padding: .3em 1em;
+    margin: 0 1em 0 0;
+}
+
+/* Field sizes */
+.tipfy-form .full {
+    width: 100% !important;
+}
+.tipfy-form .half {
+    width: 50% !important;
+}
+.tipfy-form .third {
+    width: 33% !important;
+}
+.tipfy-form .large {
+    width: 400px !important;
+}
+.tipfy-form .medium {
+    width: 200px !important;
+}
+.tipfy-form .small {
+    width: 100px !important;
+}
+/* Size exceptions for textareas */
+.tipfy-form textarea.large {
+    width: 100% !important;
+    height: 400px !important;
+}
+.tipfy-form textarea.medium {
+    width: 100% !important;
+    height: 200px !important;
+}
+.tipfy-form textarea.small {
+    width: 100% !important;
+    height: 100px !important;
+}
+
+/* --- Horizontal forms --- */
+.tipfy-form table {
+}
+.tipfy-form table td {
+    vertical-align: top;
+    padding: .5em 0;
+}
+.tipfy-form table th {
+    text-align: right;
+    vertical-align: top;
+    padding: .8em .5em .5em 0;
+}
+.tipfy-form table th label {
+    text-align: right;
+}

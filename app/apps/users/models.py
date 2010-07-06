@@ -17,9 +17,13 @@ class CustomUser(User):
     # way we don't have "ungood", "ungOOd", and "ungOod" as separate users.
     formatted_username = db.StringProperty(required=True)
     
-    #@classmethod
-    #def get_by_username(cls, username):
-    #    return CustomUser.all(keys_only=True).filter('username=', username.lower()).get()
+    @property
+    def key_name(self):
+        return self.key().name()
+    
+    @property
+    def karma(self):
+        return statistics.Counter('karma', self.key_name)
     
     @classmethod
     def register(cls, type, username, password, confirm, email):
@@ -43,3 +47,11 @@ class CustomUser(User):
         username = username.lower()
         if not auth.get_auth_system().login_with_form(username, password, remember):
             raise validation.BadFormatError('Username or password are not correct.')
+    
+    @classmethod
+    def logout(cls):
+        auth.get_auth_system().logout()
+        
+    @classmethod
+    def get_current_user(cls):
+        return auth.get_current_user()

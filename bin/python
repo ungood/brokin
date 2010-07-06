@@ -1,17 +1,10 @@
 #!/usr/local/bin/python2.5
 
-import os
-
-join = os.path.join
-base = os.path.dirname(os.path.abspath(os.path.realpath(__file__)))
-base = os.path.dirname(base)
-
 import sys
+from gae_path import extend_sys_path, setup_appserver
 
-sys.path[0:0] = [
-  join(base, 'etc/eggs/appfy.recipe.gae-0.7.2-py2.5.egg'),
-  join(base, 'etc/parts/google_appengine'),
-  ]
+extend_sys_path()
+setup_appserver()
 
 _interactive = True
 if len(sys.argv) > 1:

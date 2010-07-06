@@ -7,10 +7,10 @@
 {% endmacro %}
 
 {% macro link_post(post) %}
-  <a href="{{ url_for('view-post', post_key=post.key().name()) }}">
+  <a href="{{ url_for('view-post', post_key=post.key_name) }}">
     {{ display_post(post) }}
   </a>
-  <span>by {{ post.author_username|default('Anonymous', true)|e }}
+  <span>by {{ author_name|default('Anonymous', true)|e }}
 {% endmacro %}
 
 {% macro paint_edit() %}

@@ -17,7 +17,7 @@ def baseX_encode(num, chars=1, alphabet=BASE62_ALPHABET):
     """
     arr = []
     base = len(alphabet)
-    while chars > 0:
+    while chars > 0 or num > 0:
         num, rem = divmod(num, base)
         arr.append(alphabet[rem])
         chars -= 1
@@ -57,4 +57,4 @@ class KeyGenerator():
         """
         bits = 6 * self.length # ln(62) == 6
         num = random.getrandbits(bits)
-        return baseX_encode(random.getrandbits(bits), chars=self.length)
+        return baseX_encode(random.getrandbits(bits), chars=self.length)[:self.length]

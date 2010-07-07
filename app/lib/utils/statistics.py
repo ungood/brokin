@@ -1,15 +1,16 @@
 # -*- coding: utf-8 -*-
 import random
+import logging
 from math import sqrt, log
 from datetime import datetime, timedelta
 
 from google.appengine.ext import db
 from google.appengine.api import memcache
 
+import tipfy
 import pytz
 
 from utils.cache import memoize, make_key
-
 
 def constrain(amt, low, high):
     """Constrains a value between low and high."""
@@ -24,7 +25,7 @@ def constrain(amt, low, high):
 class CounterShardConfig(db.Model):
     """Tracks the number of shards for each named counter."""
     name        = db.StringProperty(required=True)
-    num_shards  = db.IntegerProperty(required=True, default=20)
+    num_shards  = db.IntegerProperty(required=True, default=5)
     
     @staticmethod
     @memoize('get_num_shards')
@@ -128,11 +129,11 @@ def _wilson_score(upvotes, downvotes):
     z = 1.0 # pnormaldist(confidence)
     phat = float(upvotes) / n
     result = sqrt(phat+z*z/(2*n)-z*((phat*(1-phat)+z*z/(4*n))/n))/(1+z*z/n)
-    return int(result * 10e7)
+    return int(result * 10e6)
 
-_up_range     = 500
-_down_range   = 100
-_wilson_cache = [[_wilson_score(up, down) for up in xrange(0, _uprange)] for down in xrange(0, _downrange)]
+_uprange     = 500
+_downrange   = 100
+_wilson_cache = [[_wilson_score(up, down) for down in xrange(0, _downrange)] for up in xrange(0, _uprange)]
 
 def wilson_score(upvotes, downvotes):
     """Calculates the lower bound of Wilson score confidence interval for a
@@ -141,7 +142,7 @@ def wilson_score(upvotes, downvotes):
     http://blog.linkibol.com/2010/05/07/how-to-build-a-popularity-algorithm-you-can-be-proud-of/
     http://www.evanmiller.org/how-not-to-sort-by-average-rating.html
     """
-    if 0 <= upvotes <= _up_range and 0 <= downvotes <= _down_range:
+    if 0 <= upvotes <= _uprange and 0 <= downvotes <= _downrange:
         return _wilson_cache[upvotes][downvotes]
     return _wilson_score(upvotes, downvotes)
 
@@ -150,8 +151,10 @@ def _lonely_coefficient(replies):
     """An easing function that maps [0, positive infinity) to [1, 0)"""
     return 1/((replies+1)**0.3)
 
-_lonely_cache = [_lonely_coefficient for x in xrange(0, 100)]
+_lonely_cache = [_lonely_coefficient(x) for x in xrange(0, 100)]
 
+def lonely_coefficient(replies):
+    return _lonely_cache[replies] if replies <= 100 else _lonely_coefficient(replies)
 
 def hot_and_lonely(upvotes, downvotes, replies, date):
     """Calculates hotness and lonely ratings for an item, returned as a tuple.
@@ -164,16 +167,31 @@ def hot_and_lonely(upvotes, downvotes, replies, date):
     score  = upvotes - downvotes
     order = log(max(abs(score), 1), 10)
     sign = 1 if score > 0 else -1 if score < 0 else 0
-    hot_hours = sign * order * 12
+    hot_hours = sign * order * 24
     
     replies = max(replies, 0)
-    coeff = _lonely_cache[replies] if replies <= 100 else _lonely_coefficient(replies)
-    
+        
     hot    = timedelta(hours=hot_hours)
-    lonely = timedelta(hours=hot_hours * coeff)
+    lonely = timedelta(hours=hot_hours * lonely_coefficient(replies))
     return (date + hot, date + lonely)
         
-        
-        
-        
+
+class StatisticsMixin():
+    """A common mixin for classes that want to implement statistics."""
+    upvotes      = db.IntegerProperty('up', default=0)
+    downvotes    = db.IntegerProperty('dn', default=0)
+    reply_count  = db.IntegerProperty('rc', default=0)
+    
+    top_score    = db.IntegerProperty('ts', default=0)
+    best_score   = db.IntegerProperty('bs', default=0)
+    hot_score    = db.DateTimeProperty('hs')
+    lonely_score = db.DateTimeProperty('ls')
+    
+    def update_scores(self, created):
+        top_score = statistics.top_score(upvotes, downvotes)
+        best_score = statistics.wilson_score(upvotes, downvotes)
+        (hot_score, lonely_score) = statistics.hot_and_lonely(upvotes,
+                                                              downvotes,
+                                                              reply_count,
+                                                              created)
         

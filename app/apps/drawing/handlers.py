@@ -16,8 +16,7 @@ class ViewImageHandler(BaseHandler):
 class BasePostHandler(BaseHandler):
     def dispatch(self, *args, **kwargs):
         self.context = self.context or {}
-        self.context
-        
+                
         return RequestHandler.dispatch(self, *args, **kwargs)
     
     def _assign_user(self, post):

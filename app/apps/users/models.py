@@ -10,20 +10,29 @@ from tipfy.ext.auth.model import User
 USER_TYPES = ['own']
 
 class CustomUser(User):
-    user_type = db.StringProperty(required=True, choices=USER_TYPES)
+    user_type = db.StringProperty('type', required=True, choices=USER_TYPES)
     
     # This is the username as originally entered by the user.  We have to keep
     # this separate so we can store the lowercase username in `username`.  That
     # way we don't have "ungood", "ungOOd", and "ungOod" as separate users.
-    formatted_username = db.StringProperty(required=True)
+    formatted_username = db.StringProperty('fu', required=True)
+    
+    karma = db.IntegerProperty('k', default_value=0)
     
     @property
     def key_name(self):
         return self.key().name()
     
     @property
-    def karma(self):
+    def karma_counter(self):
         return statistics.Counter('karma', self.key_name)
+    
+    def create_update_task(self):
+        queue = CachedQueue('update_user')
+        task = taskqueue.Task(countdown=30, params = {
+            'user_key' : self.key_name  
+        })
+        queue.add(self.key_name, task)
     
     @classmethod
     def register(cls, type, username, password, confirm, email):

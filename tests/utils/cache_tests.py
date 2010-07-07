@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
-import unittest, random
-from utils.cache import memoize
+import unittest
+import random
+from utils.cache import make_key, memoize, CachedQueue
 from google.appengine.ext import db
-
+from google.appengine.api.labs import taskqueue
 j = 0
 
 class DummyEntity(db.Model):
@@ -68,3 +69,17 @@ class CacheTest(unittest.TestCase):
     def entity_test(self):
         dummy = entity_method()
         self.assertEqual(dummy.foo, entity_method().foo)
+        
+class CachedQueueTest(unittest.TestCase):
+    def payload_test(self):
+        queue = CachedQueue('default')
+        payload = 'hello world'
+        task1 = taskqueue.Task(payload)
+        task2 = taskqueue.Task(payload)
+        task3 = taskqueue.Task(payload)
+        
+        self.assertFalse(queue.add('key', task1))
+        self.assertTrue(queue.add('key', task2))
+        
+        queue.clear('key')
+        self.assertFalse(queue.add('key', task3))

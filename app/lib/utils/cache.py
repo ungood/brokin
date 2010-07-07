@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
-import logging, inspect
+import logging
+import inspect
 from hashlib import md5
 
 from google.appengine.api import memcache
+from google.appengine.api.labs import taskqueue
 from google.appengine.ext import db
 
 def serialize_entities(models):
@@ -84,3 +86,33 @@ def memoize(key, returns_entity=False, time=60):
         return wrapper
     
     return decorator
+
+class CachedQueue(taskqueue.Queue):
+    """A subclass of Queue that only adds a task if there is not a pending task
+    for the given payload/params.
+    
+    The aim of this class is to avoid redundant task creation for really busy
+    queues so as to stay under the task-per-second quota.
+    
+    It is assumed that it is better for a task to execute twice than for it to
+    not execute at all, so there is no gaurantee that a task will only execute
+    once.
+    """
+    def add(self, key, task, transactional=False):
+        """Adds a task to the queue if it not already in the queue.
+        
+        Returns the enqueued task if one already exists.
+        """
+        cache_key = make_key('queue-' + self.name, key)
+        cached_task = memcache.get(cache_key)
+        if cached_task:
+            return cached_task
+        else:
+            memcache.set(cache_key, task)
+            super(CachedQueue, self).add(task, transactional)
+            return None
+        
+    def clear(self, key):
+        """Clears the cache for a given task and payload."""
+        cache_key = make_key('queue-' + self.name, key)
+        memcache.delete(cache_key)

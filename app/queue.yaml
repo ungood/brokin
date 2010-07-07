@@ -1,0 +1,7 @@
+queue:
+- name: default
+  rate: 1/s
+- name: update_post
+  rate: 1/s
+- name: update_user
+  rate: 1/s

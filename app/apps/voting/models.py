@@ -3,8 +3,10 @@ from google.appengine.ext import db
 
 from apps.drawing.models import Post
 from apps.users.models import CustomUser
-from utils.statistics import constrain
+from utils.statistics import constrain, CounterShard
+from utils.cache import CachedQueue
 
+def
 
 class Vote(db.Model):
     post = db.ReferenceProperty('p', Post, required=True, collection_name='votes')
@@ -33,7 +35,11 @@ class Vote(db.Model):
         upvotes   = constrain(value - old_value, -1, 1)
         downvotes = constrain(old_value - value, -1, 1)
         
-        post.upvotes += upvotes
-        post.downvotes += downvotes
-        if post.author:
-            post.author.karma += (upvotes - downvotes)
+        post.upvote_counter += upvotes
+        post.downvote_counter += downvotes
+        if post.author_key:
+            CounterShard.add('karma', post.author_key, (upvotes - downvotes))
+            
+        post.create_update_task()
+        user.create_update_task()
+        

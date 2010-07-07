@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import logging, re, base64
 
+from google.appengine.api.labs import taskqueue
 from google.appengine.ext import db
 from google.appengine.ext.db import polymodel
 
@@ -8,7 +9,8 @@ from tipfy import url_for
 from tipfy.ext.db import get_by_key_name_or_404
 
 from apps.users.models import CustomUser
-from utils import cache, keys, statistics
+from utils.cache import memoize, CachedQueue
+from utils import keys, statistics
 
 _data_url_regex = re.compile(r'^data:(?P<type>[^;]+);base64,(?P<content>.+)$')
 _key_generator  = keys.KeyGenerator()
@@ -38,12 +40,12 @@ class Image(db.Model):
                      full_size    = full_size)
     
     @staticmethod    
-    @cache.memoize('Image.get')
+    @memoize('Image.get', is_entity=True)
     def get_or_404(key_name):
         return get_by_key_name_or_404(Image, key_name)
     
 
-class Post(polymodel.PolyModel):
+class Post(polymodel.PolyModel, statistics.StatisticsMixin):
     """Base class representing either an image or a text post."""
     reply_to        = db.SelfReferenceProperty('r', collection_name='replies')
     
@@ -52,12 +54,6 @@ class Post(polymodel.PolyModel):
     # creates an account, his already-made posts will be tied to it.
     session_key     = db.StringProperty('s')    
     
-    # Statistics we use to calculate scores
-    top_score    = db.IntegerProperty('ts', default=0)
-    best_score   = db.IntegerProperty('bs', default=0)
-    hot_score    = db.DateTimeProperty('hs')
-    lonely_score = db.DateTimeProperty('ls')
-        
     created = db.DateTimeProperty('c', auto_now_add=True)
     updated = db.DateTimeProperty('u', auto_now=True)
     
@@ -74,33 +70,43 @@ class Post(polymodel.PolyModel):
         return author.username if author else None
     
     @property
-    def upvotes(self):
+    def upvote_counter(self):
         return statistics.Counter('upvotes', self.key_name)
         
     @property
-    def downvotes(self):
+    def reply_counter(self):
         return statistics.Counter('downvotes', self.key_name)
-    
+        
     @property
-    def reply_count(self):
+    def reply_counter(self):
         return statistics.Counter('replies', self.key_name)
     
     def update_scores(self):
-        up = int(self.upvotes)
-        down = int(self.downvotes)
-        replies = int(self.reply_count)
+        self.upvotes     = int(self.upvote_counter)
+        self.downvotes   = int(self.downvote_counter)
+        self.reply_count = int(self.reply_counter)
         
-        top_score = statistics.top_score(up, down)
-        best_score = statistics.wilson_score(up, down)
-        (hot_score, lonely_score) = statistics.hot_and_lonely(up, down, replies, created)
-     
+        return statistics.StatisticsMixin(self, self.created)
+    
+    def add_reply(self, reply):
+        reply.reply_to = self
+        self.reply_counter += 1
+        self.create_update_task()
+        
+    def create_update_task(self):
+        queue = CachedQueue('update_post')
+        task = taskqueue.Task(countdown=30, params = {
+            'post_key' : self.key_name  
+        })
+        queue.add(self.key_name, task)
+    
     @staticmethod
-    @cache.memoize('Post.get')
+    @memoize('Post.get', is_entity=True)
     def get_or_404(key_name):
         return get_by_key_name_or_404(Post, key_name)
     
     @staticmethod    
-    @cache.memoize('Post.recent')
+    @memoize('Post.recent', is_entity=True)
     def list_recent():
         return Post.all().order('-created').fetch(10)
 
